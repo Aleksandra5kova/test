@@ -23,6 +23,7 @@ public class SubjectDaoImpl implements SubjectDao {
 	/* Method to ADD a subject to the records */
 	public void addSubject(Subject subject) {
 		try {
+			System.out.println("ASd3");
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();

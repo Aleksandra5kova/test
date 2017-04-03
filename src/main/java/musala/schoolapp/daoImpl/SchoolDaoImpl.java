@@ -22,6 +22,7 @@ public class SchoolDaoImpl implements SchoolDao {
 	/* Method to ADD a school to the records */
 	public void addSchool(School school) {
 		try {
+			System.out.println("asd");
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();

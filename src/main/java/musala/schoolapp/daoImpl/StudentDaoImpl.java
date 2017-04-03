@@ -24,6 +24,7 @@ public class StudentDaoImpl implements StudentDao {
 	/* Method to ADD a student to the records */
 	public void addStudent(Student student) {
 		try {
+			System.out.println("ASd2");
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
