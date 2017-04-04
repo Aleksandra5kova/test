@@ -16,6 +16,8 @@ import musala.schoolapp.model.Subject;
 public class SchoolApp {
 
 	public static void main(String[] args) throws ParseException {
+		
+		
 
 		List<Student> studentsfinki = new ArrayList<Student>();
 		List<Student> studentsfeit = new ArrayList<Student>();
