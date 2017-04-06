@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+
 @Entity
 @Table(name = "student")
 public class Student {
@@ -35,7 +36,6 @@ public class Student {
 	@Column(name = "student_lastname")
 	private String lastname;
 	
-
 	@NotNull
 	@Column(name = "student_gender")
 	private String gender;
@@ -162,4 +162,5 @@ public class Student {
 				+ gender + ", city=" + city + ", dateOdBirth=" + df.format(dateOfBirth) + ", phone=" + phone + ", index=" + index + ", school= " + school.getName() + "]";
 		return student;
 	}
+	
 }

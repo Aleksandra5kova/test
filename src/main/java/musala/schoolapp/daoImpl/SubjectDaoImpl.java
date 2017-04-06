@@ -3,7 +3,6 @@ package musala.schoolapp.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,24 +18,20 @@ public class SubjectDaoImpl implements SubjectDao {
 	private SessionFactory sessionFactory;
 	private Session session = null;
 	private Transaction tx = null;
-	
+
 	/* Method to ADD a subject to the records */
 	public void addSubject(Subject subject) {
 		try {
-			System.out.println("ASd3");
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
 			session.save(subject);
 			tx.commit();
 			System.out.println("Subject added.");
-		} catch (HibernateException ex){
-			if(tx != null){
+		} catch (Exception ex) {
+			if (tx != null) {
 				tx.rollback();
 			}
-			System.out.println("Subject is not added.");
-			ex.printStackTrace();
-		} catch (Exception ex) {
 			System.out.println("Subject is not added.");
 			ex.printStackTrace();
 		} finally {
@@ -54,13 +49,10 @@ public class SubjectDaoImpl implements SubjectDao {
 			session.delete(subject);
 			tx.commit();
 			System.out.println("Subject deleted.");
-		} catch (HibernateException ex){
-			if(tx != null){
+		} catch (Exception ex) {
+			if (tx != null) {
 				tx.rollback();
 			}
-			System.out.println("Subject is not deleted.");
-			ex.printStackTrace();
-		} catch (Exception ex) {
 			System.out.println("Subject is not deleted.");
 			ex.printStackTrace();
 		} finally {
@@ -79,13 +71,10 @@ public class SubjectDaoImpl implements SubjectDao {
 			session.update(subject);
 			tx.commit();
 			System.out.println("Subject is updated.");
-		} catch (HibernateException ex){
-			if(tx != null){
+		} catch (Exception ex) {
+			if (tx != null) {
 				tx.rollback();
 			}
-			System.out.println("Subject is not updated.");
-			ex.printStackTrace();
-		} catch (Exception ex) {
 			System.out.println("Subject is not updated.");
 			ex.printStackTrace();
 		} finally {
@@ -104,18 +93,15 @@ public class SubjectDaoImpl implements SubjectDao {
 			session.update(subject);
 			tx.commit();
 			System.out.println("Subject is updated.");
-		} catch (HibernateException ex){
-			if(tx != null){
+		} catch (Exception ex) {
+			if (tx != null) {
 				tx.rollback();
 			}
 			System.out.println("Subject is not updated.");
 			ex.printStackTrace();
-		} catch (Exception ex) {
-			System.out.println("Subject is not updated.");
-			ex.printStackTrace();
 		} finally {
 			session.close();
-		}	
+		}
 	}
 
 	/* Method to FIND subject by id */
@@ -128,13 +114,10 @@ public class SubjectDaoImpl implements SubjectDao {
 			subject = (Subject) session.get(Subject.class, id);
 			tx.commit();
 			System.out.println("Returned " + subject.toString());
-		} catch (HibernateException ex){
-			if(tx != null){
+		} catch (Exception ex) {
+			if (tx != null) {
 				tx.rollback();
 			}
-			System.out.println("Subject is not found.");
-			ex.printStackTrace();
-		} catch (Exception ex) {
 			System.out.println("Subject is not found.");
 			ex.printStackTrace();
 		} finally {
@@ -151,16 +134,9 @@ public class SubjectDaoImpl implements SubjectDao {
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
-			String hql = "FROM Subject";
-			Query query = session.createQuery(hql);
+			Query query = session.getNamedQuery("subject.listSubjects");
 			subjects = query.list();
 			tx.commit();
-		} catch (HibernateException ex){
-			if (tx != null){
-				tx.rollback();
-			}
-			System.out.println("Subjects are not listed.");
-			ex.printStackTrace();
 		} catch (Exception ex) {
 			System.out.println("Subjects are not listed.");
 			ex.printStackTrace();
@@ -178,17 +154,10 @@ public class SubjectDaoImpl implements SubjectDao {
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
-			String hql = "SELECT subject FROM Subject subject JOIN subject.students student WHERE student.id=:studentId";
-			Query query = session.createQuery(hql);
-			query.setParameter("studentId", student.getId());
+			Query query = session.getNamedQuery("subject.listSubjectsByStudent").setInteger("studentId",
+					student.getId());
 			subjects = query.list();
 			tx.commit();
-		} catch (HibernateException ex){
-			if (tx != null){
-				tx.rollback();
-			}
-			System.out.println("Subjects are not listed.");
-			ex.printStackTrace();
 		} catch (Exception ex) {
 			System.out.println("Subjects are not listed.");
 			ex.printStackTrace();

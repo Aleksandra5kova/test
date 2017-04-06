@@ -12,8 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+@NamedQueries({ @NamedQuery(name = "subject.listSubjects", query = "FROM Subject"),
+		@NamedQuery(name = "subject.listSubjectsByStudent", query = "SELECT subject FROM Subject subject JOIN subject.students student WHERE student.id=:studentId") })
 
 @Entity
 @Table(name = "subject")
@@ -23,30 +28,30 @@ public class Subject {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "subject_id")
 	private Integer id;
-	
+
 	@NotNull
 	@Column(name = "subject_name", unique = true)
 	private String name;
-	
+
 	@NotNull
 	@Column(name = "subject_status")
 	private String status;
-	
+
 	@Column(name = "subject_credits")
 	private Integer credits;
-	
+
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "subject_student",
-				joinColumns = { @JoinColumn(name="subject_id") },
-				inverseJoinColumns = { @JoinColumn(name="student_id") })
+	@JoinTable(name = "subject_student", joinColumns = { @JoinColumn(name = "subject_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "student_id") })
 	private Collection<Student> students = new ArrayList<Student>();
-	
-	public Subject() {}
-	
+
+	public Subject() {
+	}
+
 	public Subject(String name, String status, Integer credits) {
 		this.name = name;
 		this.status = status;
-		this.credits=credits;
+		this.credits = credits;
 	}
 
 	public Integer getId() {
@@ -88,10 +93,11 @@ public class Subject {
 	public void setStudents(Collection<Student> students) {
 		this.students = students;
 	}
-	
+
 	@Override
 	public String toString() {
-		String subject = "Subject [id=" + id + ", name= " + name + ", status= " + status + ", credits= " + credits + "]";
+		String subject = "Subject [id=" + id + ", name= " + name + ", status= " + status + ", credits= " + credits
+				+ "]";
 		return subject;
 	}
 }

@@ -3,11 +3,16 @@ package musala.schoolapp.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
+
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 
 import musala.schoolapp.dao.StudentDao;
 import musala.schoolapp.main.DBSessionFactory;
@@ -24,20 +29,16 @@ public class StudentDaoImpl implements StudentDao {
 	/* Method to ADD a student to the records */
 	public void addStudent(Student student) {
 		try {
-			System.out.println("ASd2");
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
 			session.save(student);
 			tx.commit();
 			System.out.println("Student added.");
-		} catch (HibernateException ex) {
+		} catch (Exception ex) {
 			if (tx != null) {
 				tx.rollback();
 			}
-			System.out.println("Student is not added.");
-			ex.printStackTrace();
-		} catch (Exception ex) {
 			System.out.println("Student is not added.");
 			ex.printStackTrace();
 		} finally {
@@ -55,13 +56,10 @@ public class StudentDaoImpl implements StudentDao {
 			session.delete(student);
 			tx.commit();
 			System.out.println("Student deleted.");
-		} catch (HibernateException ex) {
+		} catch (Exception ex) {
 			if (tx != null) {
 				tx.rollback();
 			}
-			System.out.println("Student is not deleted.");
-			ex.printStackTrace();
-		} catch (Exception ex) {
 			System.out.println("Student is not deleted.");
 			ex.printStackTrace();
 		} finally {
@@ -79,13 +77,10 @@ public class StudentDaoImpl implements StudentDao {
 			student = (Student) session.get(Student.class, id);
 			tx.commit();
 			System.out.println("Returned " + student.toString());
-		} catch (HibernateException ex) {
+		} catch (Exception ex) {
 			if (tx != null) {
 				tx.rollback();
 			}
-			System.out.println("Student is not found.");
-			ex.printStackTrace();
-		} catch (Exception ex) {
 			System.out.println("Student is not found.");
 			ex.printStackTrace();
 		} finally {
@@ -102,16 +97,9 @@ public class StudentDaoImpl implements StudentDao {
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
-			String hql = "FROM Student";
-			Query query = session.createQuery(hql);
-			students = query.list();
+			Criteria cr = session.createCriteria(Student.class);
+			students = cr.list();
 			tx.commit();
-		} catch (HibernateException ex){
-			if (tx != null){
-				tx.rollback();
-			}
-			System.out.println("Students are not listed.");
-			ex.printStackTrace();
 		} catch (Exception ex) {
 			System.out.println("Students are not listed.");
 			ex.printStackTrace();
@@ -129,17 +117,14 @@ public class StudentDaoImpl implements StudentDao {
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
-			String hql = "FROM Student student WHERE student.school=:school";
-			Query query = session.createQuery(hql);
-			query.setParameter("school", school);
-			students = query.list();
+//			SIMPLE CONDITION
+//			String hql = "FROM Student student WHERE student.school=:school";
+//			Query query = session.createQuery(hql);
+//			query.setParameter("school", school);
+			Criteria cr = session.createCriteria(Student.class);
+			cr.add(Restrictions.eq("school", school));
+			students = cr.list();
 			tx.commit();
-		} catch (HibernateException ex){
-			if (tx != null){
-				tx.rollback();
-			}
-			System.out.println("Students are not listed.");
-			ex.printStackTrace();
 		} catch (Exception ex) {
 			System.out.println("Students are not listed.");
 			ex.printStackTrace();
@@ -157,23 +142,75 @@ public class StudentDaoImpl implements StudentDao {
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
-			String hql = "SELECT student FROM Student student JOIN student.subjects subject where subject.id=:subjectId";
-			Query query = session.createQuery(hql);
-			query.setParameter("subjectId", subject.getId());
-			students = query.list();
+//			JOIN USING HQL (MANY TO MANY)			
+//			String hql = "SELECT student FROM Student student JOIN student.subjects subject where subject.id=:subjectId";
+//			Query query = session.createQuery(hql);
+//			query.setParameter("subjectId", subject.getId());
+//			students = query.list();
+//			JOIN USING CRITERIA (MANY TO MANY)
+			Criteria cr = session.createCriteria(Student.class);
+			cr.createAlias("subjects", "subject", JoinType.INNER_JOIN);
+			cr.add(Restrictions.eq("subject.id", subject.getId()));
+			students = cr.list();
 			tx.commit();
-		} catch (HibernateException ex){
-			if (tx != null){
-				tx.rollback();
-			}
-			System.out.println("Students are not listed.");
-			ex.printStackTrace();
 		} catch (Exception ex) {
 			System.out.println("Students are not listed.");
 			ex.printStackTrace();
 		} finally {
 			session.close();
 		}
+		return students;
+	}
+
+	/*Method to RETURN list of girls which index starts with 135*/
+	@SuppressWarnings("unchecked")
+	public List<Student> countGirls() {
+		List<Student> students = new ArrayList<Student>();
+		try {
+			sessionFactory = DBSessionFactory.getSessionFactory();
+			session = sessionFactory.openSession();
+			tx = session.beginTransaction();
+			Criteria cr = session.createCriteria(Student.class);
+			cr.setProjection(Projections.rowCount());
+			cr.add(Restrictions.and(Restrictions.like("index", "135%"), Restrictions.eq("gender", "female")));
+			students = cr.list();
+			tx.commit();
+		} catch (Exception ex) {
+			System.out.println("Students are not listed.");
+			ex.printStackTrace();
+		} finally {
+			session.close();
+		}
+		
+		return students;
+	}
+	
+	/*Method to RETURN list of girls which index starts with 135*/
+	@SuppressWarnings("unchecked")
+	public List<Student> listGirls() {
+		List<Student> students = new ArrayList<Student>();
+		try {
+			sessionFactory = DBSessionFactory.getSessionFactory();
+			session = sessionFactory.openSession();
+			tx = session.beginTransaction();
+			Criteria cr = session.createCriteria(Student.class);
+			ProjectionList pr = Projections.projectionList();
+		//	pr.add(Projections.groupProperty("id"));
+//			pr.add(Projections.groupProperty("firstname"));
+//			pr.add(Projections.groupProperty("lastname"));
+//			cr.setProjection(pr);
+			cr.add(Restrictions.and(Restrictions.like("index", "135%"), Restrictions.eq("gender", "female")));
+			cr.addOrder(Order.asc("id"));
+//			cr.setResultTransformer(Transformers.aliasToBean(Student.class));
+			students = cr.list();
+			tx.commit();
+		} catch (Exception ex) {
+			System.out.println("Students are not listed.");
+			ex.printStackTrace();
+		} finally {
+			session.close();
+		}
+		
 		return students;
 	}
 

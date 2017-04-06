@@ -1,5 +1,7 @@
 package musala.schoolapp.main;
 
+import java.util.Properties;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -12,10 +14,17 @@ public class DBSessionFactory {
 	/* Method to create SessionFactory */
 	private static void createSessionFactory() {
 		try {
-			Configuration configuration = new Configuration().configure();
-			StandardServiceRegistry builder = new StandardServiceRegistryBuilder()
-					.applySettings(configuration.getProperties()).build();
-			sessionFactory = configuration.buildSessionFactory(builder);
+			if (sessionFactory == null) {
+
+				Properties properties = new Properties();
+				properties.load(ClassLoader.getSystemResourceAsStream("hibernate.properties"));
+				
+				Configuration configuration = new Configuration().mergeProperties(properties).configure();
+				StandardServiceRegistry builder = new StandardServiceRegistryBuilder()
+						.applySettings(configuration.getProperties()).build();
+				sessionFactory = configuration.buildSessionFactory(builder);
+
+			}
 		} catch (Exception ex) {
 			System.out.println("Failed to create session factory object.");
 			ex.printStackTrace();

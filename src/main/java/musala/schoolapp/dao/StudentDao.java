@@ -20,4 +20,7 @@ public interface StudentDao {
 	
 	public List<Student> listStudentsBySubject(Subject subject);
 	
+	public List<Student> countGirls();
+	
+	public List<Student> listGirls();
 }
