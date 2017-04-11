@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,7 +18,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
 
 @Entity
 @Table(name = "student")
@@ -35,7 +35,7 @@ public class Student {
 	@NotNull
 	@Column(name = "student_lastname")
 	private String lastname;
-	
+
 	@NotNull
 	@Column(name = "student_gender")
 	private String gender;
@@ -58,7 +58,7 @@ public class Student {
 	@JoinColumn(name = "school_id")
 	private School school;
 
-	@ManyToMany(mappedBy = "students", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "students", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Collection<Subject> subjects = new ArrayList<Subject>();
 
 	public Student() {
@@ -159,8 +159,9 @@ public class Student {
 	public String toString() {
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 		String student = "Student [id=" + id + ", firstname=" + firstname + ", lastname=" + lastname + ", gender="
-				+ gender + ", city=" + city + ", dateOdBirth=" + df.format(dateOfBirth) + ", phone=" + phone + ", index=" + index + ", school= " + school.getName() + "]";
+				+ gender + ", city=" + city + ", dateOdBirth=" + df.format(dateOfBirth) + ", phone=" + phone
+				+ ", index=" + index + ", school= " + (school != null ? school.getName() : null) + "]";
 		return student;
 	}
-	
+
 }

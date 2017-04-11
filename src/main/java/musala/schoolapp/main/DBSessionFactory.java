@@ -7,6 +7,8 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+import com.github.fluent.hibernate.cfg.scanner.EntityScanner;
+
 public class DBSessionFactory {
 
 	private static SessionFactory sessionFactory;
@@ -18,12 +20,13 @@ public class DBSessionFactory {
 
 				Properties properties = new Properties();
 				properties.load(ClassLoader.getSystemResourceAsStream("hibernate.properties"));
-				
-				Configuration configuration = new Configuration().mergeProperties(properties).configure();
+
+				Configuration configuration = new Configuration();
+				EntityScanner.scanPackages("musala.schoolapp.model").addTo(configuration);
+				configuration.mergeProperties(properties).configure();
 				StandardServiceRegistry builder = new StandardServiceRegistryBuilder()
 						.applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(builder);
-
 			}
 		} catch (Exception ex) {
 			System.out.println("Failed to create session factory object.");

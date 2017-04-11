@@ -20,4 +20,5 @@ public interface SchoolDao {
 	
 	public List<School> schoolNameByStudent1(Student student);
 	
+	public List<School> listSchoolsWithStudents();
 }

@@ -6,17 +6,13 @@ import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
-@NamedQueries({
-	@NamedQuery(name="school.listSchools", query="FROM School")
-})
 
 @Entity
 @Table(name = "school")
@@ -37,7 +33,8 @@ public class School {
 	@Column(name = "school_phone")
 	private String phone;
 
-	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OrderBy("student_index")
 	private Collection<Student> students = new ArrayList<Student>();
 
 	public School() {

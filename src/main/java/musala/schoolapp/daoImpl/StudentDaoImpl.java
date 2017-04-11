@@ -13,11 +13,13 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.hibernate.transform.Transformers;
 
 import musala.schoolapp.dao.StudentDao;
 import musala.schoolapp.main.DBSessionFactory;
 import musala.schoolapp.model.School;
 import musala.schoolapp.model.Student;
+import musala.schoolapp.model.StudentDTO;
 import musala.schoolapp.model.Subject;
 
 public class StudentDaoImpl implements StudentDao {
@@ -187,21 +189,24 @@ public class StudentDaoImpl implements StudentDao {
 	
 	/*Method to RETURN list of girls which index starts with 135*/
 	@SuppressWarnings("unchecked")
-	public List<Student> listGirls() {
-		List<Student> students = new ArrayList<Student>();
+	public List<StudentDTO> listGirls() {
+		List<StudentDTO> students = new ArrayList<StudentDTO>();
 		try {
 			sessionFactory = DBSessionFactory.getSessionFactory();
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
 			Criteria cr = session.createCriteria(Student.class);
 			ProjectionList pr = Projections.projectionList();
-		//	pr.add(Projections.groupProperty("id"));
-//			pr.add(Projections.groupProperty("firstname"));
-//			pr.add(Projections.groupProperty("lastname"));
-//			cr.setProjection(pr);
+			pr.add(Projections.groupProperty("id"),"id");
+			pr.add(Projections.groupProperty("firstname"),"firstname");
+			pr.add(Projections.groupProperty("lastname"),"lastname");
+			pr.add(Projections.groupProperty("gender"),"gender");
+			pr.add(Projections.groupProperty("dateOfBirth"),"dateOfBirth");
+			pr.add(Projections.groupProperty("index"),"indexNumber");
+			cr.setProjection(pr);
 			cr.add(Restrictions.and(Restrictions.like("index", "135%"), Restrictions.eq("gender", "female")));
 			cr.addOrder(Order.asc("id"));
-//			cr.setResultTransformer(Transformers.aliasToBean(Student.class));
+			cr.setResultTransformer(Transformers.aliasToBean(StudentDTO.class));
 			students = cr.list();
 			tx.commit();
 		} catch (Exception ex) {

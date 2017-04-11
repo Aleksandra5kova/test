@@ -4,6 +4,7 @@ import java.util.List;
 
 import musala.schoolapp.model.School;
 import musala.schoolapp.model.Student;
+import musala.schoolapp.model.StudentDTO;
 import musala.schoolapp.model.Subject;
 
 public interface StudentDao {
@@ -22,5 +23,5 @@ public interface StudentDao {
 	
 	public List<Student> countGirls();
 	
-	public List<Student> listGirls();
+	public List<StudentDTO> listGirls();
 }

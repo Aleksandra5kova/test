@@ -175,4 +175,24 @@ public class SchoolDaoImpl implements SchoolDao {
 		return schools;
 	}
 
+	@SuppressWarnings("unchecked")
+	/* Method to LIST all the schools with the students */
+	public List<School> listSchoolsWithStudents() {
+		List<School> schools = new ArrayList<School>();
+		try {
+			sessionFactory = DBSessionFactory.getSessionFactory();
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query = session.getNamedQuery("school.listSchoolsWithStudents");
+			schools = query.list();
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println("Schools are not listed.");
+			ex.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return schools;
+	}
+
 }
